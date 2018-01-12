@@ -41,10 +41,10 @@ The encrypted part of privateCert is encrypted with an AES-256 key that is deriv
 Just include the file asymcrypt.js in your HTML-file.
 
 ### Library functions
-1. [createCert](#createCert)
-2. [newConversation](#newConversation)
-3. [decryptConversation](#decryptConversation)
-4. [encryptMessage](#encryptMessage)
+1. [createCert](#createcert)
+2. [newConversation](#newconversation)
+3. [decryptConversation](#decryptconversation)
+4. [encryptMessage](#encryptmessage)
 
 #### createCert
 Returns a new certificate object.
@@ -87,7 +87,7 @@ asymcrypt.newConversation(
 Returns a new conversation object:
 ```javascript
 conversation:
-  encryptedConversation: // Array of encrypted, b64-encoded messages
+	encryptedConversation: // Array of encrypted, b64-encoded messages
   [
     "/OqS/+pkj/tKY…TInoXuS8w==",
     "hzrwWa+f/sEdh…1se5/n5kl8g", …
