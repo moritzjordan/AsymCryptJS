@@ -694,6 +694,10 @@ https://github.com/moritzjordan/AsymCryptJS
               keyObject,
               stringToUint8Array(JSON.stringify(encryptedPart))
             );
+          },
+          function(error)
+          {
+            reject(error);
           }
         );
         sequence = sequence.then(
