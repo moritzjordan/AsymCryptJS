@@ -168,7 +168,7 @@ https://github.com/moritzjordan/AsymCryptJS
           function (key)
           {
             keyObject = key;
-            return crypto.subtle.exportKey("jwk", keyObject.publicKey);
+            return crypto.subtle.exportKey("spki", keyObject.publicKey);
           },
           function (error)
           {
@@ -178,7 +178,9 @@ https://github.com/moritzjordan/AsymCryptJS
         sequence = sequence.then(
           function (keyData)
           {
-            keyJSON.publicKey = keyData;
+            keyJSON.publicKey = "-----BEGIN PUBLIC KEY-----"
+              + btoa(Uint8ArrayToString(new Uint8Array(keyData)))
+              + "-----END PUBLIC KEY-----";
             return crypto.subtle.exportKey("jwk", keyObject.privateKey);
           },
           function (error)
@@ -243,11 +245,11 @@ https://github.com/moritzjordan/AsymCryptJS
     }
 
 		// encrypts a key with every public certificate given as an array
-    var encryptKeyJSON = function (key, publicKeys)
+    // adds encrypted symmetric key to encryptedSymKeys object
+    var encryptKeyJSON = function (key, publicKeys, encryptedSymKeys)
     {
       return new Promise(function (resolve, reject)
       {
-        var encryptedSymKeys = {};
         key = stringToUint8Array(key);
 
         var i = 0;
@@ -261,9 +263,13 @@ https://github.com/moritzjordan/AsymCryptJS
             sequence = sequence.then(
               function()
               {
+                var publicEncryptionKey = publicKeys[i].publicEncryptionKey;
+                publicEncryptionKey = publicEncryptionKey.replace("-----BEGIN PUBLIC KEY-----", "");
+                publicEncryptionKey = publicEncryptionKey.replace("-----END PUBLIC KEY-----", "");
+                publicEncryptionKey = stringToUint8Array(atob(publicEncryptionKey));
                 return crypto.subtle.importKey(
-                  "jwk",
-                  publicKeys[i].publicEncryptionKey,
+                  "spki",
+                  publicEncryptionKey,
                   {
                     name: "RSA-OAEP",
                     hash: {name: "SHA-256"}
@@ -512,9 +518,13 @@ https://github.com/moritzjordan/AsymCryptJS
         sequence = sequence.then(
           function()
           {
+            var publicVerificationKey = publicCert.publicVerificationKey;
+            publicVerificationKey = publicVerificationKey.replace("-----BEGIN PUBLIC KEY-----", "");
+            publicVerificationKey = publicVerificationKey.replace("-----END PUBLIC KEY-----", "");
+            publicVerificationKey = stringToUint8Array(atob(publicVerificationKey));
             return window.crypto.subtle.importKey(
-              "jwk",
-              publicCert.publicVerificationKey,
+              "spki",
+              publicVerificationKey,
               {
                 name: "RSASSA-PKCS1-v1_5",
                 hash: {name: "SHA-256"},
@@ -802,7 +812,8 @@ https://github.com/moritzjordan/AsymCryptJS
             symKeyJSON = JSON.stringify(symKeyJSON);
             allPublicKeys.push(privateCert.public);
 						// encrypt the symmetric communication key with all given public keys
-            return encryptKeyJSON(symKeyJSON, allPublicKeys);
+            var encryptedSymKeys = {};
+            return encryptKeyJSON(symKeyJSON, allPublicKeys, encryptedSymKeys);
           },
           function(error)
           {
@@ -998,6 +1009,42 @@ https://github.com/moritzjordan/AsymCryptJS
         );
       });
     }
+
+    /*
+    _asymcryptObject.addUserToConversation = function(conversation, certificate, publicKeys)
+    {
+      return new Promise(function(resolve, reject)
+      {
+        var sequence = Promise.resolve();
+        var privateCert;
+
+        sequence = sequence.then(
+          function()
+          {
+            return decryptPrivateCert(certificate.privateCert, passphrase);
+          }
+        );
+        sequence = sequence.then(
+          function(decrypted)
+          {
+            privateCert = decrypted;
+						// extract symmetric communication key
+            return extractSymKeyObject(privateCert, conversation.encryptedSymKeys);
+          },
+          function(error)
+          {
+            reject(error);
+          }
+        );
+        sequence = sequence.then(
+          function(symKeyObject)
+          {
+
+          }
+        );
+      });
+    }
+    */
 
     return _asymcryptObject;
   }
