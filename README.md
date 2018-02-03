@@ -16,9 +16,8 @@ certificate:
 		publicEncryptionKey
 		publicVerificationKey
 		email
-		name:
-			firstName
-			lastName
+		name
+		username
 	privateCert:
 		encrypted:
 			public:
@@ -26,9 +25,8 @@ certificate:
 				publicEncryptionKey
 				publicVerificationKey
 				email
-				name:
-					firstName
-					lastName
+				name
+				username
 			private:
 				privateDecryptionKey
 				privateSignatureKey
