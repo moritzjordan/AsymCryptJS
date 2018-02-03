@@ -596,7 +596,7 @@ https://github.com/moritzjordan/AsymCryptJS
     // Public functions
 
     // creates a certificate
-    _asymcryptObject.createCert = function (firstName, lastName, email, passphrase)
+    _asymcryptObject.createCert = function (name, username, email, passphrase)
     {
       return new Promise(function (resolve, reject)
       {
@@ -607,10 +607,8 @@ https://github.com/moritzjordan/AsymCryptJS
             publicEncryptionKey: {},
             publicVerificationKey: {},
             email: email,
-            name: {
-              firstName,
-              lastName
-            },
+            name: name,
+            username: username
           },
           privateCert: {
             encrypted: "",
@@ -623,10 +621,8 @@ https://github.com/moritzjordan/AsymCryptJS
             publicEncryptionKey: {},
             publicVerificationKey: {},
             email: email,
-            name: {
-              firstName,
-              lastName
-            },
+            name: name,
+            username: username
           },
           private: {
             privateDecryptionKey: {},
@@ -1009,42 +1005,6 @@ https://github.com/moritzjordan/AsymCryptJS
         );
       });
     }
-
-    /*
-    _asymcryptObject.addUserToConversation = function(conversation, certificate, publicKeys)
-    {
-      return new Promise(function(resolve, reject)
-      {
-        var sequence = Promise.resolve();
-        var privateCert;
-
-        sequence = sequence.then(
-          function()
-          {
-            return decryptPrivateCert(certificate.privateCert, passphrase);
-          }
-        );
-        sequence = sequence.then(
-          function(decrypted)
-          {
-            privateCert = decrypted;
-						// extract symmetric communication key
-            return extractSymKeyObject(privateCert, conversation.encryptedSymKeys);
-          },
-          function(error)
-          {
-            reject(error);
-          }
-        );
-        sequence = sequence.then(
-          function(symKeyObject)
-          {
-
-          }
-        );
-      });
-    }
-    */
 
     return _asymcryptObject;
   }
