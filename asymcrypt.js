@@ -92,8 +92,8 @@ https://github.com/moritzjordan/AsymCryptJS
       return str;
     }
 
-    // Derives a 256Bit AES-Key from a passphrase given as a string
-    var makeKeyObjectFromPassphrase = function (passphrase)
+    // Derives a 256Bit AES-Key including salt from a passphrase given as a string
+    var makeKeyObjectFromPassphrase = function (passphrase, salt)
     {
       return new Promise(function (resolve, reject)
       {
@@ -105,7 +105,7 @@ https://github.com/moritzjordan/AsymCryptJS
             // create encryption keypair
             return crypto.subtle.digest(
               {name: "SHA-256",},
-              stringToUint8Array(passphrase)
+              stringToUint8Array(passphrase + salt)
             );
           }
         );
@@ -208,10 +208,11 @@ https://github.com/moritzjordan/AsymCryptJS
       return new Promise(function (resolve, reject)
       {
         var sequence = Promise.resolve();
+
         sequence = sequence.then(
           function()
           {
-            return makeKeyObjectFromPassphrase(passphrase);
+            return makeKeyObjectFromPassphrase(passphrase, atob(privateCert.salt));
           }
         );
         sequence = sequence.then(
@@ -612,7 +613,8 @@ https://github.com/moritzjordan/AsymCryptJS
           },
           privateCert: {
             encrypted: "",
-            iv: ""
+            iv: "",
+            salt: btoa(Uint8ArrayToString(crypto.getRandomValues(new Uint8Array(32))))
           }
         };
         var encryptedPart = {
@@ -680,7 +682,7 @@ https://github.com/moritzjordan/AsymCryptJS
             certificate.publicCert.keyId = fingerprint.substr(32);
             encryptedPart.public.keyId = fingerprint.substr(32);
 						// create symmetric key for private certificate encryption
-            return makeKeyObjectFromPassphrase(passphrase);
+            return makeKeyObjectFromPassphrase(passphrase, atob(certificate.privateCert.salt));
           },
           function (error)
           {
