@@ -48,7 +48,7 @@ https://github.com/moritzjordan/AsymCryptJS
     }
 
     // Transforms an integer into a hexadecimal
-		// only works with 0 <= x < 256 integers
+    // only works with 0 <= x < 256 integers
     var decToHex = function (dec)
     {
       var firstDigit = Math.floor(dec / 16);
@@ -179,8 +179,8 @@ https://github.com/moritzjordan/AsymCryptJS
           function (keyData)
           {
             keyJSON.publicKey = "-----BEGIN PUBLIC KEY-----"
-              + btoa(Uint8ArrayToString(new Uint8Array(keyData)))
-              + "-----END PUBLIC KEY-----";
+            + btoa(Uint8ArrayToString(new Uint8Array(keyData)))
+            + "-----END PUBLIC KEY-----";
             return crypto.subtle.exportKey("jwk", keyObject.privateKey);
           },
           function (error)
@@ -202,7 +202,7 @@ https://github.com/moritzjordan/AsymCryptJS
       });
     }
 
-		// decrypts a private certificate given the corresponding passphrase
+    // decrypts a private certificate given the corresponding passphrase
     var decryptPrivateCert = function (privateCert, passphrase)
     {
       return new Promise(function (resolve, reject)
@@ -245,7 +245,7 @@ https://github.com/moritzjordan/AsymCryptJS
       });
     }
 
-		// encrypts a key with every public certificate given as an array
+    // encrypts a key with every public certificate given as an array
     // adds encrypted symmetric key to encryptedSymKeys object
     var encryptKeyJSON = function (key, publicKeys, encryptedSymKeys)
     {
@@ -323,9 +323,9 @@ https://github.com/moritzjordan/AsymCryptJS
       });
     }
 
-		// signs and encrypts a message given as a string
-		// needs a private certificate, the symmetric key given as an object
-		// and the initialization vector corresponding to the communication
+    // signs and encrypts a message given as a string
+    // needs a private certificate, the symmetric key given as an object
+    // and the initialization vector corresponding to the communication
     var signEncryptMessage = function(message, privateCert, symKeyObject, iv)
     {
       return new Promise(function(resolve, reject)
@@ -423,9 +423,9 @@ https://github.com/moritzjordan/AsymCryptJS
       });
     }
 
-		// extracts the symmetric key of a communication given
-		// the object containig the encrypted symmetric keys
-		// and the private certificate to decrypt the key
+    // extracts the symmetric key of a communication given
+    // the object containig the encrypted symmetric keys
+    // and the private certificate to decrypt the key
     var extractSymKeyObject = function(privateCert, symKeys)
     {
       return new Promise(function(resolve, reject)
@@ -507,8 +507,8 @@ https://github.com/moritzjordan/AsymCryptJS
       });
     }
 
-		// verifies a message given the message as a String
-		// and the public certificate that was used to sign the message
+    // verifies a message given the message as a String
+    // and the public certificate that was used to sign the message
     var verifyMessage = function(message, publicCert)
     {
       return new Promise(function(resolve, reject)
@@ -579,7 +579,7 @@ https://github.com/moritzjordan/AsymCryptJS
       });
     }
 
-		// returns a public key from an array of public keys given the specific keyId
+    // returns a public key from an array of public keys given the specific keyId
     var getPublicKey = function(keyId, publicKeys)
     {
       var i = 0;
@@ -601,7 +601,7 @@ https://github.com/moritzjordan/AsymCryptJS
     {
       return new Promise(function (resolve, reject)
       {
-				// declare variables
+        // declare variables
         var certificate = {
           publicCert: {
             keyId: "",
@@ -649,7 +649,7 @@ https://github.com/moritzjordan/AsymCryptJS
             certificate.publicCert.publicEncryptionKey = key.publicKey;
             encryptedPart.private.privateDecryptionKey = key.privateKey;
             encryptedPart.public.publicEncryptionKey = key.publicKey;
-						// create signature keypair
+            // create signature keypair
             return createKeyJSON("RSASSA-PKCS1-v1_5", ["sign", "verify"]);
           },
           function (error)
@@ -663,7 +663,7 @@ https://github.com/moritzjordan/AsymCryptJS
             certificate.publicCert.publicVerificationKey = key.publicKey;
             encryptedPart.private.privateSignatureKey = key.privateKey;
             encryptedPart.public.publicVerificationKey = key.publicKey;
-						// create fingerprint for public certificate
+            // create fingerprint for public certificate
             return crypto.subtle.digest(
               {name: "SHA-1"},
               stringToUint8Array(JSON.stringify(certificate.publicCert))
@@ -681,7 +681,7 @@ https://github.com/moritzjordan/AsymCryptJS
             encryptedPart.fingerprint = fingerprint;
             certificate.publicCert.keyId = fingerprint.substr(32);
             encryptedPart.public.keyId = fingerprint.substr(32);
-						// create symmetric key for private certificate encryption
+            // create symmetric key for private certificate encryption
             return makeKeyObjectFromPassphrase(passphrase, atob(certificate.privateCert.salt));
           },
           function (error)
@@ -693,7 +693,7 @@ https://github.com/moritzjordan/AsymCryptJS
           function(keyObject)
           {
             iv = crypto.getRandomValues(new Uint8Array(16));
-						// encrypt private certificate
+            // encrypt private certificate
             return crypto.subtle.encrypt(
               {
                 name: "AES-CBC",
@@ -713,7 +713,7 @@ https://github.com/moritzjordan/AsymCryptJS
           {
             certificate.privateCert.encrypted = btoa(Uint8ArrayToString(new Uint8Array(encrypted)));
             certificate.privateCert.iv = btoa(Uint8ArrayToString(iv));
-						// return certificate
+            // return certificate
             resolve(certificate);
           },
           function (error)
@@ -729,7 +729,7 @@ https://github.com/moritzjordan/AsymCryptJS
     {
       return new Promise(function (resolve, reject)
       {
-				// declare variables
+        // declare variables
         var signedMessage =
         {
           signature: "",
@@ -756,7 +756,7 @@ https://github.com/moritzjordan/AsymCryptJS
         sequence = sequence.then(
           function()
           {
-						// create symmetric communication key
+            // create symmetric communication key
             return crypto.subtle.generateKey(
               {
                 name: "AES-CBC",
@@ -771,7 +771,7 @@ https://github.com/moritzjordan/AsymCryptJS
           function(symKeyObj)
           {
             symKeyObject = symKeyObj;
-						// decrypt private certificate
+            // decrypt private certificate
             return decryptPrivateCert(certificate.privateCert, passphrase);
           },
           function(error)
@@ -783,7 +783,7 @@ https://github.com/moritzjordan/AsymCryptJS
           function(decrypted)
           {
             privateCert = decrypted;
-						// sign and encrypt message given the private certificate
+            // sign and encrypt message given the private certificate
             return signEncryptMessage(message, privateCert, symKeyObject, iv);
           },
           function(error)
@@ -795,7 +795,7 @@ https://github.com/moritzjordan/AsymCryptJS
           function(encrypted)
           {
             encryptedMessage = encrypted;
-						// export the symmetric communication key
+            // export the symmetric communication key
             return crypto.subtle.exportKey("jwk", symKeyObject);
           },
           function(error)
@@ -809,7 +809,7 @@ https://github.com/moritzjordan/AsymCryptJS
             symKeyJSON.key = keyJSON;
             symKeyJSON = JSON.stringify(symKeyJSON);
             allPublicKeys.push(privateCert.public);
-						// encrypt the symmetric communication key with all given public keys
+            // encrypt the symmetric communication key with all given public keys
             var encryptedSymKeys = {};
             return encryptKeyJSON(symKeyJSON, allPublicKeys, encryptedSymKeys);
           },
@@ -821,7 +821,7 @@ https://github.com/moritzjordan/AsymCryptJS
         sequence = sequence.then(
           function(encryptedSymKeys)
           {
-						// return the communication object
+            // return the communication object
             resolve(
               {
                 encryptedConversation: [encryptedMessage],
@@ -837,12 +837,12 @@ https://github.com/moritzjordan/AsymCryptJS
       });
     }
 
-		// encrypts a message given the symmetric communication key
+    // encrypts a message given the symmetric communication key
     _asymcryptObject.encryptMessage = function (message, symKeys, certificate, passphrase)
     {
       return new Promise(function (resolve, reject)
       {
-				// declare variables
+        // declare variables
         var privateCert;
 
         var sequence = Promise.resolve();
@@ -850,7 +850,7 @@ https://github.com/moritzjordan/AsymCryptJS
         sequence = sequence.then(
           function()
           {
-						// decrypt the private certificate
+            // decrypt the private certificate
             return decryptPrivateCert(certificate.privateCert, passphrase);
           }
         );
@@ -858,7 +858,7 @@ https://github.com/moritzjordan/AsymCryptJS
           function(decrypted)
           {
             privateCert = decrypted;
-						// extract the symmetric communication key object from the symKeys-object
+            // extract the symmetric communication key object from the symKeys-object
             return extractSymKeyObject(privateCert, symKeys);
           },
           function(error)
@@ -869,7 +869,7 @@ https://github.com/moritzjordan/AsymCryptJS
         sequence = sequence.then(
           function(symKeyObject)
           {
-						// sign and encrypt the new message
+            // sign and encrypt the new message
             return signEncryptMessage(message, privateCert, symKeyObject.key, symKeyObject.iv);
           },
           function(error)
@@ -880,19 +880,19 @@ https://github.com/moritzjordan/AsymCryptJS
         sequence = sequence.then(
           function(encrypted)
           {
-						// return the encrypted message
+            // return the encrypted message
             resolve(encrypted);
           }
         );
       });
     }
 
-		// decrypt a conversation
+    // decrypt a conversation
     _asymcryptObject.decryptConversation = function (conversation, certificate, passphrase, publicKeys)
     {
       return new Promise(function (resolve, reject)
       {
-				// declare variables
+        // declare variables
         var privateCert;
 
         var sequence = Promise.resolve();
@@ -900,7 +900,7 @@ https://github.com/moritzjordan/AsymCryptJS
         sequence = sequence.then(
           function()
           {
-						// decrypt private certificate
+            // decrypt private certificate
             return decryptPrivateCert(certificate.privateCert, passphrase);
           }
         );
@@ -908,7 +908,7 @@ https://github.com/moritzjordan/AsymCryptJS
           function(decrypted)
           {
             privateCert = decrypted;
-						// extract symmetric communication key
+            // extract symmetric communication key
             return extractSymKeyObject(privateCert, conversation.encryptedSymKeys);
           },
           function(error)
@@ -922,11 +922,11 @@ https://github.com/moritzjordan/AsymCryptJS
             var verifiedMessages = [];
 
             var i = 0;
-						// loop over the array of encrypted messages
+            // loop over the array of encrypted messages
             while(conversation.encryptedConversation[i])
             {
-							// anonymous function for loop of asynchronous functions
-							// to create an individual scope for each loop pass
+              // anonymous function for loop of asynchronous functions
+              // to create an individual scope for each loop pass
               (function(i){
 
                 var sequence = Promise.resolve();
@@ -935,7 +935,7 @@ https://github.com/moritzjordan/AsymCryptJS
                 sequence = sequence.then(
                   function()
                   {
-										// decrypt the encrypted message
+                    // decrypt the encrypted message
                     return window.crypto.subtle.decrypt(
                       {
                         name: "AES-CBC",
@@ -950,11 +950,11 @@ https://github.com/moritzjordan/AsymCryptJS
                   function(decrypted)
                   {
                     decryptedMessage = JSON.parse(Uint8ArrayToString(new Uint8Array(decrypted)));
-										// get the public verification key for specific message
+                    // get the public verification key for specific message
                     var messageOwnersKey = getPublicKey(decryptedMessage.message.signatureKeyId, publicKeys);
                     if (messageOwnersKey)
                     {
-											// verify the message
+                      // verify the message
                       return verifyMessage(decryptedMessage, messageOwnersKey);
                     } else {
                       return "No public verification key found.";
@@ -968,7 +968,7 @@ https://github.com/moritzjordan/AsymCryptJS
                 sequence = sequence.then(
                   function(isValid)
                   {
-										// add verified message to result-array
+                    // add verified message to result-array
                     verifiedMessages.push(
                       {
                         content: decryptedMessage.message,
@@ -982,7 +982,7 @@ https://github.com/moritzjordan/AsymCryptJS
                   },
                   function(error)
                   {
-										// add non-verified message to result-array
+                    // add non-verified message to result-array
                     verifiedMessages.push(
                       {
                         content: decryptedMessage.message,
@@ -991,7 +991,7 @@ https://github.com/moritzjordan/AsymCryptJS
                     );
                     if (i == conversation.encryptedConversation.length - 1)
                     {
-											// return array of decrypted/verified messages
+                      // return array of decrypted/verified messages
                       resolve(verifiedMessages);
                     }
                   }
